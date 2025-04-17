@@ -173,7 +173,7 @@ let gennzainonyuuryokuti = '0'; // 現在の入力値
 let maenonyuuryokuti = ''; // 前の入力値
 let nyuuryokumati = false; // 演算子入力後の待機フラグ
 let memoryValue = 0; // メモリー値
-
+let errorOccurred = false; // エラー発生フラグ
 // 表示を整形する関数
 function formatDisplay(value) {
     if (value === 'error' || value === '桁数オーバー') {
@@ -264,7 +264,6 @@ function joukenndenyuuryokutiwotuika(sign) {
     }
 }
 
-// 計算実行
 function keisannsurukannsuu() {
     if (!maenonyuuryokuti || !gennzainoenzannsi) {
         return;
@@ -272,7 +271,6 @@ function keisannsurukannsuu() {
 
     try {
         let result;
-        // 各演算子による計算
         switch (gennzainoenzannsi) {
             case '+':
                 result = decimalCalc.add(maenonyuuryokuti, gennzainonyuuryokuti);
@@ -284,7 +282,9 @@ function keisannsurukannsuu() {
                 result = decimalCalc.mul(maenonyuuryokuti, gennzainonyuuryokuti);
                 break;
             case '÷':
-                if (gennzainonyuuryokuti === '0') {
+                const currentValue = parseFloat(gennzainonyuuryokuti);
+                // 現在の入力値が数値として評価してほぼゼロの場合にエラーとする
+                if (Math.abs(currentValue) < 1e-10) { // 非常に小さい値を許容範囲とする (調整可能)
                     gennzainonyuuryokuti = 'error';
                     return;
                 }
@@ -296,19 +296,21 @@ function keisannsurukannsuu() {
         }
         console.log('計算結果:', result);
 
-        // 結果の文字列を正規化
         result = decimalCalc.toString(result);
-        console.log('正規化後の結果:', result);        
-        // 整数部の桁数をチェック（小数点と符号を除く）
+        console.log('正規化後の結果:', result);
         const numStr = result.split('.')[0];
         console.log('整数部の文字列:', numStr);
-        // 負のシンボルを除いて桁数をカウント
         const integerPartLength = numStr.replace('-', '').length;
         console.log('整数部の桁数:', integerPartLength);
+
         if (integerPartLength >= String(MAX_RESULT_VALUE).length) {
             gennzainonyuuryokuti = '桁数オーバー';
         } else {
-            gennzainonyuuryokuti = result;
+            if (decimalCalc.toString(result) === '0' || decimalCalc.toString(result) === '-0') {
+                gennzainonyuuryokuti = '0';
+            } else {
+                gennzainonyuuryokuti = result;
+            }
             kekka = true;
         }
 
@@ -318,9 +320,9 @@ function keisannsurukannsuu() {
     } catch (e) {
         console.error('計算エラー:', e);
         gennzainonyuuryokuti = 'error';
+        errorOccurred = true;
     }
 }
-
 // メモリー機能
 function mrbutton() {
     if (nyuuryokumati || memoryValue === 0) {
@@ -399,7 +401,11 @@ function denntakurisseto() {
 }
 
 function deletebutton() {
-    // 計算結果が出ている場合は削除ボタンを無効にする
+    // 演算子入力後の場合は削除ボタンを無効にする
+    if (nyuuryokumati) {
+        return;
+    }
+    // 計算結果が出ている場合は削除ボタンを無効にする (既存の処理)
     if (kekka) {
         return;
     }
@@ -454,8 +460,13 @@ function zerozerobutton() {
     }
 }
 
-// メイン制御関数
 function calc(sign) {
+    // "桁数オーバー" または "error" 表示中、またはエラーが発生した場合はクリア機能
+    if (gennzainonyuuryokuti === '桁数オーバー' || gennzainonyuuryokuti === 'error' || errorOccurred) {
+        denntakurisseto();
+        return; // クリア処理後に関数の残りの処理をスキップ
+    }
+
     switch (sign) {
         case 'C':
             denntakurisseto();
@@ -486,14 +497,13 @@ function calc(sign) {
             break;
         default:
             if (['+', '-', '×', '÷'].includes(sign)) {
-                if (gennzainonyuuryokuti !== 'error' && gennzainonyuuryokuti !== '桁数オーバー') {
-                    if (maenonyuuryokuti && gennzainoenzannsi) {
-                        keisannsurukannsuu();
-                    }
-                    maenonyuuryokuti = gennzainonyuuryokuti;
-                    gennzainoenzannsi = sign;
-                    nyuuryokumati = true;
+                if (maenonyuuryokuti && gennzainoenzannsi) {
+                    keisannsurukannsuu();
                 }
+                maenonyuuryokuti = gennzainonyuuryokuti;
+                gennzainoenzannsi = sign;
+                nyuuryokumati = true;
+                kekka = false;
             } else {
                 if (nyuuryokumati) {
                     gennzainonyuuryokuti = '0';
@@ -506,7 +516,7 @@ function calc(sign) {
                 joukenndenyuuryokutiwotuika(sign);
             }
     }
-    
+
     // 表示更新
     const displayValue = formatDisplay(gennzainonyuuryokuti);
     document.form.text.value = memoryValue !== 0 ? "M " + displayValue : displayValue;
