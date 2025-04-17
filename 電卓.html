@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電卓</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="main">
+        <div class="calculator">
+            <form action="" name="form" id="calcForm">
+                <table class="calculator-table">
+                    <tr>
+                        <td colspan="5">  
+                            <input type="text" name="text" value="0" class="calculation-place" disabled>
+                        </td>
+                    </tr>
+                    <tr class="calculator-tr">
+                        <td><input type="button" value="MR" onclick="calc('MR')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="MC" onclick="calc('MC')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="M＋" onclick="calc('M＋')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="M－" onclick="calc('M－')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="÷" onclick="calc('÷')" class="calculation-button symbol"></td>
+                    </tr>
+                    <tr class="calculator-tr">
+                        <td><input type="button" value="+/-" onclick="calc('+/-')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="7" onclick="calc('7')" class="calculation-button num"></td>
+                        <td><input type="button" value="8" onclick="calc('8')" class="calculation-button num"></td>
+                        <td><input type="button" value="9" onclick="calc('9')" class="calculation-button num"></td>
+                        <td><input type="button" value="×" onclick="calc('×')" class="calculation-button symbol"></td>
+                    </tr>
+                    <tr class="calculator-tr">
+                        <td><input type="button" value="del" onclick="calc('del')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="4" onclick="calc('4')" class="calculation-button num"></td>
+                        <td><input type="button" value="5" onclick="calc('5')" class="calculation-button num"></td>
+                        <td><input type="button" value="6" onclick="calc('6')" class="calculation-button num"></td>
+                        <td><input type="button" value="-" onclick="calc('-')" class="calculation-button symbol"></td>
+                    </tr>
+                    <tr class="calculator-tr">
+                        <td rowspan="2"><input type="button" value="C" onclick="calc('C')" class="calculation-button symbol" style="height: 120px;"></td>
+                        <td><input type="button" value="1" onclick="calc('1')" class="calculation-button num"></td>
+                        <td><input type="button" value="2" onclick="calc('2')" class="calculation-button num"></td>
+                        <td><input type="button" value="3" onclick="calc('3')" class="calculation-button num"></td>
+                        <td><input type="button" value="+" onclick="calc('+')" class="calculation-button symbol"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" value="0" onclick="calc('0')" class="calculation-button num"></td>
+                        <td><input type="button" value="00" onclick="calc('00')" class="calculation-button num"></td>
+                        <td><input type="button" value="." onclick="calc('.')" class="calculation-button symbol"></td>
+                        <td><input type="button" value="=" onclick="calc('=')" class="calculation-button equal"></td>
+                    </tr>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<style>
+body {
+    background-color: #b6cff5;
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.main {
+    margin: 0px 100px;
+}
+
+.calculator {
+    margin: 0px 150px;
+    margin-bottom: 100px;    
+    background-color: #b6cff5;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.calculator-table {
+    table-layout: fixed;
+    width: 500px;
+    height: 300px;
+    background-color: #b6cff5;
+    border-spacing: 5px;
+}
+
+.calculation-place {
+    background-color: #7b7676;
+    border: none;
+    border-radius: 5px;
+    text-align: right;
+    color: #fff;
+    letter-spacing: 4px;
+    padding: 10px 15px;
+    width: 97%;
+    height: 50px;
+    font-size: 30px;
+    outline: solid 1px rgb(127, 127, 129);
+    margin-bottom: 10px;
+}
+
+.calculation-button {
+    width: 100%;
+    height: 60px;
+    color: #fff;
+    cursor: pointer;
+    font-size: calc(20px + 0.8vw);
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.symbol {
+    background-color: rgba(32, 32, 32, 0.8);
+}
+
+.symbol:hover {
+    background-color: rgba(63, 141, 93, 0.8);
+}
+
+.num {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.num:hover {
+    background-color: rgba(63, 141, 93, 0.8);
+}
+
+.equal {
+    background-color: rgba(238, 95, 52, 0.8);
+}
+
+.equal:hover {
+    background-color: rgba(63, 141, 93, 0.8);
+}
+
+@media (max-width: 768px) {
+    .main {
+        margin: 0;
+    }
+    
+    .calculator {
+        margin: 0;
+        padding: 10px;
+    }
+    
+    .calculator-table {
+        width: 100%;
+        height: auto;
+    }
+    
+    .calculation-button {
+        height: 50px;
+        font-size: 18px;
+    }
+}
+
+</style>
+<script>
+   
+// 定数
+const MAX_INPUT_INTEGER_DIGITS = 10; // 最大入力桁数（整数部）
+const MAX_DECIMAL_PLACES = 8; // 最大表示小数点以下桁数
+const MAX_DISPLAY_INTEGER_DIGITS = 15; // 最大表示桁数（整数部）
+const MAX_RESULT_VALUE = 10000000000; // 100億
+
+// グローバル変数
+let kekka = false; // 計算結果フラグ
+let gennzainoenzannsi = ''; // 現在の演算子
+let gennzainonyuuryokuti = '0'; // 現在の入力値
+let maenonyuuryokuti = ''; // 前の入力値
+let nyuuryokumati = false; // 演算子入力後の待機フラグ
+let memoryValue = 0; // メモリー値
+
+// 表示を整形する関数
+function formatDisplay(value) {
+    if (value === 'error' || value === '桁数オーバー') {
+        return value;
+    }
+    
+    // 文字列に変換して正規化
+    value = decimalCalc.toString(value);
+    if (value === 'NaN') {
+        return 'error';
+    }
+
+    const parts = value.split('.');
+    const integerStr = parts[0];
+    if (integerStr.length > MAX_DISPLAY_INTEGER_DIGITS) {
+        return '桁数オーバー';
+    }
+
+    // 3桁区切りのカンマ挿入
+    const formattedInteger = integerStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    // 小数部がない場合は整数部のみ返す
+    if (!parts[1]) {
+        // 入力値が直接'.'で終わる場合は表示する
+        if (value.endsWith('.')) {
+            return formattedInteger + '.';
+        }
+        return formattedInteger;
+    }
+
+    // 小数部の処理
+    const decimalPart = '.' + parts[1];
+    if (decimalPart.length > 1) {
+        // 最大小数点以下桁数を超える場合は切り捨て
+        if (decimalPart.substring(1).length > MAX_DECIMAL_PLACES) {
+            const truncated = decimalPart.substring(0, MAX_DECIMAL_PLACES + 1);
+            return formattedInteger + truncated;
+        }
+        // 計算結果の場合のみ末尾の0を削除
+        if (kekka && decimalPart !== '.') {
+            const trimmedDecimal = decimalPart.replace(/0+$/, '');
+            if (trimmedDecimal === '.') {
+                return formattedInteger;
+            }
+            return formattedInteger + trimmedDecimal;
+        }
+    }
+
+    return formattedInteger + decimalPart;
+}
+
+// 数値入力の処理
+function joukenndenyuuryokutiwotuika(sign) {
+    if (gennzainonyuuryokuti === 'error' || gennzainonyuuryokuti === '桁数オーバー') {
+        return;
+    }
+
+    // 最初の0の処理
+    if (gennzainonyuuryokuti === '0' && sign !== '.') {
+        gennzainonyuuryokuti = sign;
+        return;
+    }
+
+    // 小数点の処理
+    if (sign === '.') {
+        if (!gennzainonyuuryokuti.includes('.')) {
+            gennzainonyuuryokuti += sign;
+        }
+        return;
+    }
+
+    // 数値の入力処理
+    if (!isNaN(sign)) {
+        const parts = gennzainonyuuryokuti.split('.');
+        const integerPart = parts[0];
+        const decimalPart = parts[1] || '';
+
+        // 小数部の入力
+        if (parts.length > 1) {
+            if (decimalPart.length < MAX_DECIMAL_PLACES) {
+                gennzainonyuuryokuti += sign;
+            }
+        } 
+        // 整数部の入力
+        else if (integerPart.replace('-', '').length < MAX_INPUT_INTEGER_DIGITS) {
+            gennzainonyuuryokuti += sign;
+        }
+    }
+}
+
+// 計算実行
+function keisannsurukannsuu() {
+    if (!maenonyuuryokuti || !gennzainoenzannsi) {
+        return;
+    }
+
+    try {
+        let result;
+        // 各演算子による計算
+        switch (gennzainoenzannsi) {
+            case '+':
+                result = decimalCalc.add(maenonyuuryokuti, gennzainonyuuryokuti);
+                break;
+            case '-':
+                result = decimalCalc.sub(maenonyuuryokuti, gennzainonyuuryokuti);
+                break;
+            case '×':
+                result = decimalCalc.mul(maenonyuuryokuti, gennzainonyuuryokuti);
+                break;
+            case '÷':
+                if (gennzainonyuuryokuti === '0') {
+                    gennzainonyuuryokuti = 'error';
+                    return;
+                }
+                result = decimalCalc.div(maenonyuuryokuti, gennzainonyuuryokuti, 40);
+                break;
+            default:
+                gennzainonyuuryokuti = 'error';
+                return;
+        }
+        console.log('計算結果:', result);
+
+        // 結果の文字列を正規化
+        result = decimalCalc.toString(result);
+        console.log('正規化後の結果:', result);        
+        // 整数部の桁数をチェック（小数点と符号を除く）
+        const numStr = result.split('.')[0];
+        console.log('整数部の文字列:', numStr);
+        // 負のシンボルを除いて桁数をカウント
+        const integerPartLength = numStr.replace('-', '').length;
+        console.log('整数部の桁数:', integerPartLength);
+        if (integerPartLength >= String(MAX_RESULT_VALUE).length) {
+            gennzainonyuuryokuti = '桁数オーバー';
+        } else {
+            gennzainonyuuryokuti = result;
+            kekka = true;
+        }
+
+        gennzainoenzannsi = '';
+        maenonyuuryokuti = '';
+
+    } catch (e) {
+        console.error('計算エラー:', e);
+        gennzainonyuuryokuti = 'error';
+    }
+}
+
+// メモリー機能
+function mrbutton() {
+    if (nyuuryokumati || memoryValue === 0) {
+        return;
+    }
+    
+    const valueStr = decimalCalc.toString(memoryValue);
+    const numStr = valueStr.split('.')[0];
+    const integerPartLength = numStr.replace('-', '').length;
+    
+    if (integerPartLength >= String(MAX_RESULT_VALUE).length) {
+        gennzainonyuuryokuti = '桁数オーバー';
+    } else {
+        gennzainonyuuryokuti = valueStr;
+    }
+}
+
+function mplusbutton() {
+    if (nyuuryokumati || gennzainonyuuryokuti === 'error' || gennzainonyuuryokuti === '桁数オーバー') {
+        return;
+    }
+    
+    try {
+        const result = decimalCalc.add(memoryValue.toString(), gennzainonyuuryokuti);
+        const resultStr = decimalCalc.toString(result);
+        const numStr = resultStr.split('.')[0];
+        const integerPartLength = numStr.replace('-', '').length;
+        
+        if (integerPartLength >= String(MAX_RESULT_VALUE).length) {
+            throw new Error('桁数オーバー');
+        }
+        
+        memoryValue = resultStr;
+    } catch (e) {
+        console.error('メモリー加算エラー:', e);
+        denntakurisseto();
+        gennzainonyuuryokuti = 'error';
+    }
+}
+
+function mmainasubutton() {
+    if (nyuuryokumati || gennzainonyuuryokuti === 'error' || gennzainonyuuryokuti === '桁数オーバー') {
+        return;
+    }
+    
+    try {
+        const result = decimalCalc.sub(memoryValue.toString(), gennzainonyuuryokuti);
+        const resultStr = decimalCalc.toString(result);
+        const numStr = resultStr.split('.')[0];
+        const integerPartLength = numStr.replace('-', '').length;
+        
+        if (integerPartLength >= String(MAX_RESULT_VALUE).length) {
+            throw new Error('桁数オーバー');
+        }
+        
+        memoryValue = resultStr;
+    } catch (e) {
+        console.error('メモリー減算エラー:', e);
+        denntakurisseto();
+        gennzainonyuuryokuti = 'error';
+    }
+}
+
+function mcbutton() {
+    memoryValue = 0;
+}
+
+
+
+function denntakurisseto() {
+    kekka = false;
+    maenonyuuryokuti = '';
+    gennzainonyuuryokuti = '0';
+    gennzainoenzannsi = '';
+    nyuuryokumati = false;
+}
+
+function deletebutton() {
+    // 計算結果が出ている場合は削除ボタンを無効にする
+    if (kekka) {
+        return;
+    }
+    if (gennzainonyuuryokuti.length <= 1) {
+        gennzainonyuuryokuti = '0';
+        return;
+    }
+    gennzainonyuuryokuti = gennzainonyuuryokuti.slice(0, -1);
+    if (gennzainonyuuryokuti === '-') {
+        gennzainonyuuryokuti = '0';
+    }
+}
+
+function purasumainasu() {
+    if (gennzainonyuuryokuti === 'error' || gennzainonyuuryokuti === '桁数オーバー') {
+        return;
+    }
+    
+    if (gennzainonyuuryokuti === '0') {
+        return;
+    }
+    
+    if (gennzainonyuuryokuti.startsWith('-')) {
+        gennzainonyuuryokuti = gennzainonyuuryokuti.slice(1);
+    } else {
+        gennzainonyuuryokuti = '-' + gennzainonyuuryokuti;
+    }
+}
+
+function zerozerobutton() {
+    if (nyuuryokumati) {
+        return;
+    }
+    
+    if (gennzainonyuuryokuti === '0') {
+        return;
+    }
+    
+    const parts = gennzainonyuuryokuti.split('.');
+    const integerPart = parts[0];
+    const decimalPart = parts[1] || '';
+    
+    if (parts.length > 1) {
+        if (decimalPart.length + 2 <= MAX_DECIMAL_PLACES) {
+            gennzainonyuuryokuti += '00';
+        }
+        return;
+    }
+    
+    if (integerPart.replace('-', '').length + 2 <= MAX_INPUT_INTEGER_DIGITS) {
+        gennzainonyuuryokuti += '00';
+    }
+}
+
+// メイン制御関数
+function calc(sign) {
+    switch (sign) {
+        case 'C':
+            denntakurisseto();
+            break;
+        case 'del':
+            deletebutton();
+            break;
+        case '+/-':
+            purasumainasu();
+            break;
+        case 'MR':
+            mrbutton();
+            break;
+        case 'MC':
+            mcbutton();
+            break;
+        case 'M＋':
+            mplusbutton();
+            break;
+        case 'M－':
+            mmainasubutton();
+            break;
+        case '00':
+            zerozerobutton();
+            break;
+        case '=':
+            keisannsurukannsuu();
+            break;
+        default:
+            if (['+', '-', '×', '÷'].includes(sign)) {
+                if (gennzainonyuuryokuti !== 'error' && gennzainonyuuryokuti !== '桁数オーバー') {
+                    if (maenonyuuryokuti && gennzainoenzannsi) {
+                        keisannsurukannsuu();
+                    }
+                    maenonyuuryokuti = gennzainonyuuryokuti;
+                    gennzainoenzannsi = sign;
+                    nyuuryokumati = true;
+                }
+            } else {
+                if (nyuuryokumati) {
+                    gennzainonyuuryokuti = '0';
+                    nyuuryokumati = false;
+                }
+                if (kekka) {
+                    gennzainonyuuryokuti = '0';
+                    kekka = false;
+                }
+                joukenndenyuuryokutiwotuika(sign);
+            }
+    }
+    
+    // 表示更新
+    const displayValue = formatDisplay(gennzainonyuuryokuti);
+    document.form.text.value = memoryValue !== 0 ? "M " + displayValue : displayValue;
+}
+
+/**
+ * 高精度計算を行うためのユーティリティ
+ */
+ const decimalCalc = (function() {
+    return {
+        // 文字列変換用ユーティリティ
+        toString: function(str) {
+            if(typeof str !== 'string') str = String(str);
+            str = str.replace(/^\++/, '');
+            if(/^(0x[\da-f]+|0o[0-7]+|0b[01]+)$/i.test(str)) str = String(Number(str));
+            str = str.trim();
+            let tmp;
+            if(tmp = str.match(/^(-?)([\d.]+)(e)([+-]?)(\d+)$/i)) {
+                let n = tmp[2].split('.');
+                const s = tmp[1],
+                      f = tmp[4],
+                      e = Number(tmp[5]);
+
+                if(n[1] === undefined) n[1] = '';
+                n[1] += this.repeat('0', e);
+
+                if(f === '-') {
+                    n[0] = this.repeat('0', e) + n[0];
+                    n[1] = n[0].slice(-e) + n[1];
+                    n[0] = n[0].slice(0, -e);
+                }
+                else {
+                    n[0] += n[1].slice(0, e);
+                    n[1] = n[1].slice(e);
+                }
+                str = s + n[0].replace(/^0+$/, '') + '.' + n[1].replace(/0+$/, '');
+                str = str.replace(/^\./, '0.').replace(/\.$/, '');
+            }
+            return str;
+        },
+
+        repeat: function(str, n) {
+            if(String.prototype.repeat) {
+                return String(str).repeat(n);
+            }
+            return Array(n + 1).join(str);
+        },
+
+        cvtArray: function(str) {
+            let sgn = 1;
+            if(str[0] === '-') {
+                sgn = -1;
+                str = str.slice(1);
+            }
+            str = str.replace(/^0+/, '').replace(/(\.\d*?)0*$/,"$1").replace(/\.$/, '');
+            const len = str.replace(/\..*/, '').replace(/^0/, '').length;
+            const dzn = str.match(/\.(0+)/);
+            let dp = 0;
+            if(str.indexOf('.') !== -1) {
+                dp = str.replace(/^.*\./, '').length;
+                str = str.replace('.', '');
+            }
+            const r = str.split('');
+            for(let i = 0; i < r.length; ++i) r[i] = Number(r[i]);
+            return {
+                sign: sgn,
+                length: len,
+                decimalPosition: dp,
+                array: r,
+                decimalZeroNum: dzn !== null ? dzn[1].length : 0,
+                str: str,
+            };
+        },
+
+        // 加算
+        add: function(a, b) {
+            a = this.toString(a);
+            b = this.toString(b);
+            if(isNaN(a) || isNaN(b)) return NaN;
+            else if(a === 'Infinity' && b === '-Infinity') return NaN;
+            else if(a === '-Infinity' && b === 'Infinity') return NaN;
+            else if(/-?Infinity/.test(a)) return a;
+            else if(/-?Infinity/.test(b)) return b;
+
+            let tmp = this.cvtArray(a);
+            let aSign = tmp.sign,
+                aDecimalPosition = tmp.decimalPosition;
+            const ra = tmp.array;
+
+            tmp = this.cvtArray(b);
+            let bSign = tmp.sign,
+                bDecimalPosition = tmp.decimalPosition;
+            const rb = tmp.array;
+
+            if(aSign === 1 && bSign === -1) {
+                return this.sub(a, b.replace(/^-/, ''));
+            }
+            else if(aSign === -1 && bSign === 1) {
+                return this.sub(a, '-' + b);
+            }
+
+            if(aDecimalPosition > bDecimalPosition) {
+                for(let i = 0; i < aDecimalPosition - bDecimalPosition; i++) rb.push(0);
+                bDecimalPosition = aDecimalPosition;
+            }
+            else if(bDecimalPosition > aDecimalPosition) {
+                for(let i = 0; i < bDecimalPosition - aDecimalPosition; i++) ra.push(0);
+                aDecimalPosition = bDecimalPosition;
+            }
+
+            if(ra.length > rb.length) {
+                const n = ra.length - rb.length;
+                for(let i = 0; i < n; i++) rb.unshift(0);
+            }
+            else if(rb.length > ra.length){
+                const n = rb.length - ra.length;
+                for(let i = 0; i < n; i++) ra.unshift(0);
+            }
+
+            for(let i = 0; i < ra.length; i++) {
+                const p = ra.length - i - 1;
+                rb[p] += ra[p];
+                if(p > 0 && rb[p] >= 10) {
+                    rb[p - 1]++;
+                    rb[p] %= 10;
+                }
+            }
+
+            const result = rb.join(''),
+                  n = aDecimalPosition === 0 ? result :
+                      result.slice(0, -aDecimalPosition);
+
+            return (aSign === -1 ? '-' : '') + ((n === '' ? '0' : n) +
+                    ('.' + (aDecimalPosition ? result.slice(-aDecimalPosition) : '')).
+                    replace(/0+$/, '').replace(/\.$/, ''));
+        },
+
+        // 減算
+        sub: function(a, b) {
+            a = this.toString(a);
+            b = this.toString(b);
+            if(isNaN(a) || isNaN(b)) return NaN;
+            else if(a === 'Infinity' && b === 'Infinity') return NaN;
+            else if(a === '-Infinity' && b === '-Infinity') return NaN;
+            else if(/-?Infinity/.test(a)) return a;
+            else if(/-?Infinity/.test(b)) return -b;
+
+            let tmp = this.cvtArray(a);
+            let aSign = tmp.sign,
+                aDecimalPosition = tmp.decimalPosition;
+            const ra = tmp.array;
+
+            tmp = this.cvtArray(b);
+            let bSign = tmp.sign,
+                bDecimalPosition = tmp.decimalPosition;
+            const rb = tmp.array;
+
+            if(aSign === 1 && bSign === -1) {
+                return this.add(a, b.replace(/^-/, ''));
+            }
+            else if(aSign === -1 && bSign === 1) {
+                return this.add(a, '-' + b);
+            }
+
+            if(aDecimalPosition > bDecimalPosition) {
+                for(let i = 0; i < aDecimalPosition - bDecimalPosition; i++) rb.push(0);
+                bDecimalPosition = aDecimalPosition;
+            }
+            else if(bDecimalPosition > aDecimalPosition) {
+                for(let i = 0; i < bDecimalPosition - aDecimalPosition; i++) ra.push(0);
+                aDecimalPosition = bDecimalPosition;
+            }
+
+            if(ra.length > rb.length) {
+                const n = ra.length - rb.length;
+                for(let i = 0; i < n; i++) rb.unshift(0);
+            }
+            else if(rb.length > ra.length){
+                const n = rb.length - ra.length;
+                for(let i = 0; i < n; i++) ra.unshift(0);
+            }
+
+            let sign = '';
+            if( aSign === 1 && ra.join('') < rb.join('') ||
+                aSign === -1 && ra.join('') > rb.join('') ) sign = '-';
+
+            if(rb.join('') > ra.join('')) {
+                for(let i = 0; i < ra.length; i++) {
+                    const tmp = ra[i];
+                    ra[i] = rb[i];
+                    rb[i] = tmp;
+                }
+            }
+
+            for(let i = 0; i < ra.length; i++) {
+                const p = ra.length - i - 1;
+                ra[p] -= rb[p];
+                if(ra[p] < 0) {
+                    ra[p] += 10;
+                    if(p > 0) ra[p - 1]--;
+                }
+            }
+
+            const result = ra.join(''),
+                  n = (aDecimalPosition === 0 ? result :
+                      result.slice(0, -aDecimalPosition)).replace(/^0+/, '');
+
+            return sign + ((n === '' ? '0' : n) +
+                ('.' + (aDecimalPosition ? result.slice(-aDecimalPosition) : '')).
+                replace(/0+$/, '').replace(/\.$/, ''));
+        },
+
+        // 乗算
+        mul: function(a, b) {
+            a = this.toString(a);
+            b = this.toString(b);
+            if(isNaN(a) || isNaN(b)) return NaN;
+            else if(/^-?[0.]+$/.test(a) && /-?Infinity/.test(b)) return NaN;
+            else if(/-?Infinity/.test(a) && /^-?[0.]+$/.test(b)) return NaN;
+            else if(a === 'Infinity' && b === 'Infinity') return Infinity;
+            else if(a === '-Infinity' && b === '-Infinity') return Infinity;
+            else if(/-?Infinity/.test(a) || /-?Infinity/.test(b)) return a * b;
+
+            let tmp = this.cvtArray(a);
+            let aSign = tmp.sign,
+                aDecimalPosition = tmp.decimalPosition;
+            const ra = tmp.array;
+
+            tmp = this.cvtArray(b);
+            let bSign = tmp.sign,
+                bDecimalPosition = tmp.decimalPosition;
+            const rb = tmp.array;
+
+            const rc = [],
+                  rax = [],
+                  rbx = [],
+                  x = 7,
+                  dx = Math.pow(10, x),
+                  dx2 = dx / 10;
+
+            while(ra.length) rax.push(ra.splice(-x).join(''));
+            while(rb.length) rbx.push(rb.splice(-x).join(''));
+
+            for(let l = 0; l < rax.length; l++) {
+                for(let i = 0; i < rbx.length; i++) {
+                    const p = i + l;
+                    if(rc[p] === undefined) rc[p] = 0;
+                    rc[p] += rax[l] * rbx[i];
+                    if(rc[p] >= dx) {
+                        if(rc[p + 1] === undefined) rc[p + 1] = 0;
+                        rc[p + 1] += Math.floor(rc[p] / dx);
+                        rc[p] %= dx;
+                    }
+                }
+            }
+            rc.push(0);
+            for(let i = 0; i < rc.length; ++i) {
+                if(rc[i] < dx2) rc[i] = (this.repeat('0', x) + rc[i]).slice(-x);
+            }
+
+            const result = rc.reverse().join(''),
+                  dPos = aDecimalPosition + bDecimalPosition,
+                  rn = dPos ?
+                      result.slice(0, -dPos).replace(/^0+/, '') : result.replace(/^0+/, ''),
+                  rd = dPos ?
+                      ('.' + result.slice(-dPos)).replace(/0+$/, '').replace(/\.$/, '') : '';
+
+            return (aSign !== bSign ? '-' : '') +
+                (rn === '' ? '0' : rn) +
+                rd;
+        },
+
+        // 除算
+        div: function(a, b, m, truncate) {
+            a = this.toString(a);
+            b = this.toString(b);
+            if(isNaN(a) || isNaN(b)) return NaN;
+            else if(/-?Infinity/.test(a) && /-?Infinity/.test(b)) return NaN;
+            else if(/-?Infinity/.test(a) && !/-?Infinity/.test(b)) return a / b;
+            else if(/-?Infinity/.test(b)) return 0;
+            else if(/^-?[0.]+$/.test(a) && /^-?[0.]+$/.test(b)) return NaN;
+            else if(/^[0.]+$/.test(b) || b === '') return Infinity;
+            else if(/^-[0.]+$/.test(b)) return -Infinity;
+
+            if(m === undefined) m = 20;
+            else if(m < 0) m = 0;
+            m = Math.floor(m);
+
+            if(truncate === undefined) truncate = false;
+            truncate = Boolean(truncate);
+
+            let tmp = this.cvtArray(a);
+            let aSign = tmp.sign,
+                aDecimalPosition = tmp.decimalPosition,
+                anL = tmp.length;
+            const ra = tmp.array;
+            a = tmp.str;
+
+            tmp = this.cvtArray(b);
+            let bSign = tmp.sign,
+                bDecimalPosition = tmp.decimalPosition,
+                bnL = tmp.length,
+                bdzn = tmp.decimalZeroNum;
+            const rb = tmp.array;
+            b = tmp.str;
+
+            const qdp = 1 + anL - bnL;
+
+            if(aDecimalPosition > bDecimalPosition) {
+                for(let i = 0; i < aDecimalPosition - bDecimalPosition; i++) rb.push(0);
+            }
+            else if(bDecimalPosition > aDecimalPosition) {
+                for(let i = 0; i < bDecimalPosition - aDecimalPosition; i++) ra.push(0);
+            }
+
+            if(ra.length > rb.length) {
+                const n = ra.length - rb.length;
+                for(let i = 0; i < n; i++) rb.unshift(0);
+            }
+            else if(rb.length > ra.length){
+                const n = rb.length - ra.length;
+                for(let i = 0; i < n; i++) ra.unshift(0);
+            }
+
+            const lM = Math.max(ra.length, rb.length);
+
+            const rc = new Array(lM);
+            for(let i = 0; i < rc.length; i++) rc[i] = 0;
+
+            b = b.replace(/^0+/, '');
+
+            let k = b.length - 1;
+            a = ra.slice(1 + k - b.length, 1 + k).join('');
+
+            let sp = 0;
+            do {
+                if(ra[k + b.length] === undefined) {
+                     ra.push(0);
+                     rc.push(0);
+                }
+                let count = 0;
+                while(('00' + a).slice(-(b.length + 1)) >=
+                      ('00' + b).slice(-(b.length + 1)) ) {
+                    a = this.sub(a, b);
+                    rc[sp]++;
+                    if(++count > 9) break;
+                }
+                sp ++;
+                a += ra[k + 1];
+            } while(++k < m + 1 + lM);
+
+            let an, ad;
+            if(qdp > 0) {
+                const p = qdp + (bnL === 0 ? bdzn : 0);
+                an = rc.slice(0, p);
+                ad = rc.slice(p);
+            }
+            else {
+                an = [0];
+                ad = rc.slice(1);
+            }
+
+            if(truncate) {
+                for(let i = m; i < ad.length; i++) ad[i] = 0;
+            }
+            else {
+                if(ad[m] >= 5) {
+                    if(m > 0) {
+                        ad[m - 1]++;
+                    }
+                    else {
+                        an[an.length - 1]++;
+                    }
+                }
+                for(let i = m; i < ad.length; i++) ad[i] = 0;
+
+                for(let i = 0; i < m; i++) {
+                    const p = m - i;
+                    if(ad[p] > 9) {
+                        ad[p] %= 10;
+                        ad[p - 1]++;
+                    }
+                }
+                if(ad[0] > 9) {
+                    ad[0] %= 10;
+                    an[an.length - 1]++;
+                }
+                for(let i = 0; i < an.length - 1; i++) {
+                    const p = an.length - i - 1;
+                    if(an[p] > 9) {
+                        an[p] %= 10;
+                        an[p - 1]++;
+                    }
+                }
+            }
+
+            return (aSign !== bSign ? '-' : '') +
+                an.join('').replace(/^0+/, '').replace(/^$/, '0') +
+                ('.' + ad.join('')).replace(/0+$/, '').replace(/\.$/, '');
+        }
+    };
+})();
+
+</script>
+    
